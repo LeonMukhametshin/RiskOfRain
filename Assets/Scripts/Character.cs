@@ -12,6 +12,7 @@ public class Character : MonoBehaviour
 
     private CharacterController _characterController;
     private float _velocity;
+    private Vector3 _moveDirection;
     private bool _isGrounded;
 
     private void Awake()
@@ -28,12 +29,13 @@ public class Character : MonoBehaviour
             _velocity = -2f;
         }
 
-        Move();
+        Move(_moveDirection);
         DoGravity();
     }
 
     private void Update()
     {
+        _moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         if (_isGrounded && Input.GetButtonDown("Jump"))
         {
             Jump();
@@ -46,14 +48,12 @@ public class Character : MonoBehaviour
         return result;
     }
 
-    private void Move()
-    {
-        var direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-
+    public void Move(Vector3 direction)
+    { 
         _characterController.Move(-direction * (_speed * Time.fixedDeltaTime));
     }
 
-    private void Jump()
+    public void Jump()
     {
         _velocity = Mathf.Sqrt(_jumpHeight * -2 * gravity);
     }
