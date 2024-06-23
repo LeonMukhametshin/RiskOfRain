@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))] 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, IControllable
 {
     [SerializeField] private float _speed = 3f;
     [SerializeField] private float gravity = -9.89f;
@@ -29,17 +29,8 @@ public class Character : MonoBehaviour
             _velocity = -2f;
         }
 
-        Move(_moveDirection);
+        MoveInternal();
         DoGravity();
-    }
-
-    private void Update()
-    {
-        _moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-        if (_isGrounded && Input.GetButtonDown("Jump"))
-        {
-            Jump();
-        }
     }
 
     private bool IsOnTheGround()
@@ -49,13 +40,21 @@ public class Character : MonoBehaviour
     }
 
     public void Move(Vector3 direction)
-    { 
-        _characterController.Move(-direction * (_speed * Time.fixedDeltaTime));
+    {
+        _moveDirection = direction;
+    }
+
+    private void MoveInternal()
+    {
+        _characterController.Move(-_moveDirection * (_speed * Time.fixedDeltaTime));
     }
 
     public void Jump()
     {
-        _velocity = Mathf.Sqrt(_jumpHeight * -2 * gravity);
+        if (_isGrounded)
+        {
+            _velocity = Mathf.Sqrt(_jumpHeight * -2 * gravity);
+        }
     }
 
     private void DoGravity()
