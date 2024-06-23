@@ -1,13 +1,12 @@
 using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
 
 [RequireComponent(typeof(CharacterController))] 
 public class Character : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
+    [SerializeField] private float _speed = 3f;
     [SerializeField] private float gravity = -9.89f;
     [SerializeField] Transform _groundChecker;
-    [SerializeField] private float _groundCheckDistance = 0.4f;
+    [SerializeField] private float _checkGroundRadius = 0.3f;
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private float _jumpHeight;
 
@@ -22,7 +21,7 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _isGrounded = Physics.CheckSphere(_groundChecker.position, _groundCheckDistance, _groundLayerMask);
+        _isGrounded = IsOnTheGround();
 
         if (_isGrounded && _velocity < 0f)
         {
@@ -39,6 +38,12 @@ public class Character : MonoBehaviour
         {
             Jump();
         }
+    }
+
+    private bool IsOnTheGround()
+    {
+        var result = Physics.CheckSphere(_groundChecker.position, _checkGroundRadius, _groundLayerMask);
+        return result;
     }
 
     private void Move()
